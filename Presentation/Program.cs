@@ -43,26 +43,26 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]))
     };
 });
-//builder.Services.AddCors(options =>
-//{
-//    options.AddPolicy("AllowFrontend", policy =>
-//    {
-//        policy.WithOrigins("https://white-smoke-0e67daa03.6.azurestaticapps.net")
-//              .AllowAnyHeader()
-//              .AllowAnyMethod()
-//              .AllowCredentials();
-//    });
-//});
-builder.Services.AddCors(x =>
+builder.Services.AddCors(options =>
 {
-    x.AddPolicy("AllowAll", x =>
+    options.AddPolicy("AllowFrontend", policy =>
     {
-        x.AllowAnyOrigin();
-        x.AllowAnyHeader();
-        x.AllowAnyMethod();
+        policy.WithOrigins("https://white-smoke-0e67daa03.6.azurestaticapps.net")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
     });
-
 });
+//builder.Services.AddCors(x =>
+//{
+//    x.AddPolicy("AllowAll", x =>
+//    {
+//        x.AllowAnyOrigin();
+//        x.AllowAnyHeader();
+//        x.AllowAnyMethod();
+//    });
+
+//});
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
