@@ -183,7 +183,7 @@ public class AuthService(
     //}
 
 
-    private string GenerateJwtToken(UserEntity user)
+    private static string GenerateJwtToken(UserEntity user)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.ASCII.GetBytes("2K9Z!*r#7pLq8V^@mTzA$Nxw3hJu#ZbD"); 

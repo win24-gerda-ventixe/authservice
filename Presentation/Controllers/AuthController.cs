@@ -90,24 +90,22 @@ public class AuthController(IAuthService authService, UserManager<UserEntity> us
     //    return success ? Ok("Profile updated.") : BadRequest("Failed to update profile.");
     //}
 
-
-
-//[Authorize(Roles = "Admin")] 
-[HttpGet("users")]
-public async Task<IActionResult> GetAllUsers()
-{
-    var users = await _userManager.Users.ToListAsync();
-
-    var result = users.Select(user => new
+    [Authorize(Roles = "Admin")]
+    [HttpGet("users")]
+    public async Task<IActionResult> GetAllUsers()
     {
-        user.Id,
-        user.Email,
-        user.UserName,
-        user.Name,
-        user.Surname
-    });
+        var users = await _userManager.Users.ToListAsync();
 
-    return Ok(result);
-}
+        var result = users.Select(user => new
+        {
+            user.Id,
+            user.Email,
+            user.UserName,
+            user.Name,
+            user.Surname
+        });
+
+        return Ok(result);
+    }
 
 }

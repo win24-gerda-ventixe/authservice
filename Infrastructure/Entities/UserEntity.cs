@@ -15,6 +15,6 @@ public class UserEntity : IdentityUser
     [ProtectedPersonalData]
     public string Surname { get; set; } = null!;
 
-    //public UserProfileEntity? Profile { get; set; } 
+    public UserProfileEntity? Profile { get; set; }
 
 }

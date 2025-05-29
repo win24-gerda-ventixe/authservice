@@ -15,19 +15,30 @@ builder.Services.AddControllers()
     {
         options.SuppressModelStateInvalidFilter = false;
     });
+
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddCors(options =>
+builder.Services.AddCors(x =>
 {
-    options.AddPolicy("AllowFrontend", policy =>
+    x.AddPolicy("AllowAll", x =>
     {
-        policy.WithOrigins("http://localhost:5173") 
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();
+        x.AllowAnyOrigin();
+        x.AllowAnyHeader();
+        x.AllowAnyMethod();
     });
+
 });
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowFrontend", policy =>
+//    {
+//        policy.WithOrigins("http://localhost:5173") 
+//              .AllowAnyHeader()
+//              .AllowAnyMethod()
+//              .AllowCredentials();
+//    });
+//});
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
@@ -40,11 +51,13 @@ builder.Services.AddIdentity<UserEntity, IdentityRole>(options =>
 })
 .AddEntityFrameworkStores<DataContext>()
 .AddDefaultTokenProviders();
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
+
 .AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
@@ -59,26 +72,16 @@ builder.Services.AddAuthentication(options =>
 var app = builder.Build();
 
 app.MapOpenApi();
-
-app.UseSwagger();
-
-app.UseSwaggerUI(c =>
+if (app.Environment.IsDevelopment())
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Auth Service API V1");
-    c.RoutePrefix = string.Empty;
-});
 
-app.UseHttpsRedirection();
-
-//app.UseCors("AllowAll");
-app.UseCors("AllowFrontend");
-
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.MapControllers();
-
-
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Auth Service API V1");
+        c.RoutePrefix = string.Empty;
+    });
+}
 
 async Task SeedRolesAsync(IServiceProvider services)
 {
@@ -97,5 +100,13 @@ async Task SeedRolesAsync(IServiceProvider services)
 }
 
 await SeedRolesAsync(app.Services);
+app.UseHttpsRedirection();
 
+//app.UseCors("AllowAll");
+app.UseCors("AllowFrontend");
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllers();
 app.Run();

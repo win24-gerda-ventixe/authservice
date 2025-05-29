@@ -18,10 +18,12 @@ public class UserSignUpDto
 
     [Required]
     [MinLength(8, ErrorMessage = "Password must be at least 8 characters.")]
+    [DataType(DataType.Password)]
     public string Password { get; set; } = null!;
 
     [Required]
     [Compare("Password", ErrorMessage = "Passwords do not match.")]
+    [DataType(DataType.Password)]
     public string ConfirmPassword { get; set; } = null!;
 
     [Required]
