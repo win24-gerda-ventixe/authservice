@@ -15,7 +15,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Infrastructure.Contexts;
 
 public class DataContext(DbContextOptions<DataContext> options)
-    : IdentityDbContext<UserEntity>(options) 
+    : IdentityDbContext<UserEntity>(options)
 {
-    //public DbSet<UserProfileEntity> UserProfiles { get; set; } = null!;
+    public DbSet<UserProfileEntity> UserProfiles { get; set; } = null!;
 }

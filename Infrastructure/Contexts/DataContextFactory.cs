@@ -11,7 +11,7 @@ public class DataContextFactory : IDesignTimeDbContextFactory<DataContext>
         var optionsBuilder = new DbContextOptionsBuilder<DataContext>();
 
         optionsBuilder.UseSqlServer(
-            "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Brodins\\Desktop\\ventixe\\Backend\\EventService\\Infrastructure\\Contexts\\local_eventservice_database.mdf;Integrated Security=True;Connect Timeout=30;Encrypt=True",
+            "Server=tcp:win24-sqlserver.database.windows.net,1433;Initial Catalog=ventixedatabase;Persist Security Info=False;User ID=SqlAdmin;Password=Labaislaptasslaptazodis1!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;",
             sqlOptions => sqlOptions.MigrationsAssembly("Infrastructure")
         );
 
