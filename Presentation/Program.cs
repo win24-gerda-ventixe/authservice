@@ -53,16 +53,7 @@ builder.Services.AddCors(options =>
               .AllowCredentials();
     });
 });
-builder.Services.AddCors(x =>
-{
-    x.AddPolicy("AllowAll", x =>
-    {
-        x.AllowAnyOrigin();
-        x.AllowAnyHeader();
-        x.AllowAnyMethod();
-    });
 
-});
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
