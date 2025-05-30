@@ -64,15 +64,15 @@ builder.Services.AddAuthentication(options =>
 });
 
 
-builder.Services.AddCors(options =>
+builder.Services.AddCors(x =>
 {
-    options.AddPolicy("AllowFrontend", policy =>
+    x.AddPolicy("AllowAll", x =>
     {
-        policy.WithOrigins("https://white-smoke-0e67daa03.6.azurestaticapps.net")
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();
+        x.AllowAnyOrigin();
+        x.AllowAnyHeader();
+        x.AllowAnyMethod();
     });
+
 });
 
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -114,7 +114,7 @@ await SeedRolesAsync(app.Services);
 
 app.UseHttpsRedirection();
 
-app.UseCors("AllowFrontend");
+app.UseCors("AllowAll");
 
 app.UseAuthentication();
 app.UseAuthorization();
