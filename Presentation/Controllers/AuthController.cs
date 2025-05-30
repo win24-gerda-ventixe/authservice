@@ -25,12 +25,21 @@ public class AuthController(IAuthService authService, UserManager<UserEntity> us
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] UserSignInDto dto)
     {
-        var (success, token) = await _authService.LoginAsync(dto);
-        if (!success)
-            return Unauthorized(new { message = "Invalid credentials" });
+        try
+        {
+            var (success, token) = await _authService.LoginAsync(dto);
+            if (!success)
+                return Unauthorized(new { message = "Invalid credentials" });
 
-        return Ok(new { token });
+            return Ok(new { token });
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Login error: {ex.Message}"); // or use a logger
+            return StatusCode(500, new { message = "Server error occurred during login" });
+        }
     }
+
 
 
     //[HttpPost("register")]
