@@ -47,7 +47,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("https://ventixe-gerda-webapp3.azurewebsites.net")
+        policy.WithOrigins("https://white-smoke-0e67daa03.6.azurestaticapps.net")
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
