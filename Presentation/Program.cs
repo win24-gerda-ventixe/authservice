@@ -64,26 +64,26 @@ builder.Services.AddAuthentication(options =>
 });
 
 
-//builder.Services.AddCors(x =>
-//{
-//    x.AddPolicy("AllowAll", x =>
-//    {
-//        x.AllowAnyOrigin();
-//        x.AllowAnyHeader();
-//        x.AllowAnyMethod();
-//    });
-
-//});
-builder.Services.AddCors(options =>
+builder.Services.AddCors(x =>
 {
-    options.AddPolicy("AllowFrontend", policy =>
+    x.AddPolicy("AllowAll", x =>
     {
-        policy.WithOrigins("https://white-smoke-0e67daa03.6.azurestaticapps.net") // your deployed frontend
-              .AllowAnyHeader()
-              .AllowAnyMethod();
-              //.AllowCredentials(); // required if using withCredentials: true
+        x.AllowAnyOrigin();
+        x.AllowAnyHeader();
+        x.AllowAnyMethod();
     });
+
 });
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowFrontend", policy =>
+//    {
+//        policy.WithOrigins("https://white-smoke-0e67daa03.6.azurestaticapps.net") // your deployed frontend
+//              .AllowAnyHeader()
+//              .AllowAnyMethod();
+//              //.AllowCredentials(); // required if using withCredentials: true
+//    });
+//});
 
 
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -125,8 +125,8 @@ await SeedRolesAsync(app.Services);
 
 app.UseHttpsRedirection();
 
-//app.UseCors("AllowAll");
-app.UseCors("AllowFrontend");
+app.UseCors("AllowAll");
+//app.UseCors("AllowFrontend");
 
 
 app.UseAuthentication();
