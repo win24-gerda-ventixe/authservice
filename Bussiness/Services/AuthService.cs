@@ -1,6 +1,7 @@
 ﻿using Business.DTOs;
 using Infrastructure.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -10,10 +11,12 @@ namespace Business.Services;
 
 public class AuthService(
     UserManager<UserEntity> userManager,
-    SignInManager<UserEntity> signInManager) : IAuthService
+    SignInManager<UserEntity> signInManager, IConfiguration configuration) : IAuthService
 {
     private readonly UserManager<UserEntity> _userManager = userManager;
     private readonly SignInManager<UserEntity> _signInManager = signInManager;
+    private readonly IConfiguration _configuration = configuration;
+
 
     //public async Task<bool> LoginAsync(UserSignInDto loginDto)
     //{
@@ -183,30 +186,54 @@ public class AuthService(
     //}
 
 
-    private static string GenerateJwtToken(UserEntity user)
+    //private static string GenerateJwtToken(UserEntity user)
+    //{
+    //    var tokenHandler = new JwtSecurityTokenHandler();
+    //    var key = Encoding.ASCII.GetBytes("2K9Z!*r#7pLq8V^@mTzA$Nxw3hJu#ZbD");
+
+    //    var tokenDescriptor = new SecurityTokenDescriptor
+    //    {
+    //        Subject = new ClaimsIdentity(new[]
+    //        {
+    //            new Claim("id", user.Id.ToString()), 
+    //            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+    //            new Claim(ClaimTypes.Name, user.Name ?? string.Empty),
+    //            new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
+    //            new Claim(ClaimTypes.Role, "User")
+    //        }),
+
+
+    //        Expires = DateTime.UtcNow.AddHours(2),
+    //        SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+    //    };
+
+    //    var token = tokenHandler.CreateToken(tokenDescriptor);
+    //    return tokenHandler.WriteToken(token);
+    //}
+
+    private string GenerateJwtToken(UserEntity user)
     {
+        var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]);
         var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.ASCII.GetBytes("2K9Z!*r#7pLq8V^@mTzA$Nxw3hJu#ZbD"); 
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(new[]
             {
-                new Claim("id", user.Id.ToString()), 
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.Name),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, "User")
-            }),
-
-
+            new Claim("id", user.Id.ToString()),
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Name, user.Name ?? string.Empty),
+            new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
+            new Claim(ClaimTypes.Role, "User")
+        }),
             Expires = DateTime.UtcNow.AddHours(2),
-            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            SigningCredentials = new SigningCredentials(
+                new SymmetricSecurityKey(key),
+                SecurityAlgorithms.HmacSha256Signature)
         };
 
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
     }
-
 
 }

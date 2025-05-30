@@ -35,7 +35,7 @@ public class AuthController(IAuthService authService, UserManager<UserEntity> us
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Login error: {ex.Message}"); // or use a logger
+            Console.WriteLine($"Login error: {ex.Message}"); 
             return StatusCode(500, new { message = "Server error occurred during login" });
         }
     }
