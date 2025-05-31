@@ -161,7 +161,6 @@ public class AuthController(IAuthService authService, UserManager<UserEntity> us
         }
         catch (Exception ex)
         {
-            // TEMPORARY: expose internal details for debugging
             Console.WriteLine($"[Login ERROR] {ex}");
 
             return StatusCode(500, new
