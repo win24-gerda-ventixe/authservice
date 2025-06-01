@@ -47,9 +47,10 @@ public class AuthService(
 
         if (!result.Succeeded) return (false, null);
 
-        var token = GenerateJwtToken(user);
+        var token = await GenerateJwtTokenAsync(user); 
         return (true, token);
     }
+
 
 
     public async Task<bool> AdminLoginAsync(AdminLogInDto loginDto)
@@ -211,21 +212,56 @@ public class AuthService(
     //    return tokenHandler.WriteToken(token);
     //}
 
-    private string GenerateJwtToken(UserEntity user)
+    //private string GenerateJwtToken(UserEntity user)
+    //{
+    //    var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]);
+    //    var tokenHandler = new JwtSecurityTokenHandler();
+
+    //    var tokenDescriptor = new SecurityTokenDescriptor
+    //    {
+    //        Subject = new ClaimsIdentity(new[]
+    //        {
+    //        new Claim("id", user.Id.ToString()),
+    //        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+    //        new Claim(ClaimTypes.Name, user.Name ?? string.Empty),
+    //        new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
+    //        new Claim(ClaimTypes.Role, "User")
+    //    }),
+    //        Expires = DateTime.UtcNow.AddHours(2),
+    //        SigningCredentials = new SigningCredentials(
+    //            new SymmetricSecurityKey(key),
+    //            SecurityAlgorithms.HmacSha256Signature)
+    //    };
+
+    //    var token = tokenHandler.CreateToken(tokenDescriptor);
+    //    return tokenHandler.WriteToken(token);
+    //}
+
+    private async Task<string> GenerateJwtTokenAsync(UserEntity user)
     {
         var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]);
         var tokenHandler = new JwtSecurityTokenHandler();
 
+        // Get user roles from Identity
+        var roles = await _userManager.GetRolesAsync(user);
+
+        // Build claims
+        var claims = new List<Claim>
+    {
+        new Claim("id", user.Id.ToString()),
+        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+        new Claim(ClaimTypes.Name, user.Name ?? string.Empty),
+        new Claim(ClaimTypes.Email, user.Email ?? string.Empty)
+    };
+
+        foreach (var role in roles)
+        {
+            claims.Add(new Claim("role", role)); // matches your RoleClaimType = "role"
+        }
+
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(new[]
-            {
-            new Claim("id", user.Id.ToString()),
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.Name ?? string.Empty),
-            new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
-            new Claim(ClaimTypes.Role, "User")
-        }),
+            Subject = new ClaimsIdentity(claims),
             Expires = DateTime.UtcNow.AddHours(2),
             SigningCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(key),
@@ -235,5 +271,6 @@ public class AuthService(
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
     }
+
 
 }

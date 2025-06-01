@@ -125,6 +125,57 @@ async Task SeedRolesAsync(IServiceProvider services)
 
 await SeedRolesAsync(app.Services);
 
+async Task SeedAdminAsync(IServiceProvider services, IConfiguration config)
+{
+    using var scope = services.CreateScope();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<UserEntity>>();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+    var adminEmail = config["Admin:Email"];
+    var adminPassword = config["Admin:Password"];
+
+    if (string.IsNullOrWhiteSpace(adminEmail) || string.IsNullOrWhiteSpace(adminPassword))
+    {
+        Console.WriteLine("Admin credentials not found in configuration.");
+        return;
+    }
+
+    if (!await roleManager.RoleExistsAsync("Admin"))
+        await roleManager.CreateAsync(new IdentityRole("Admin"));
+
+    var existingAdmin = await userManager.FindByEmailAsync(adminEmail);
+    if (existingAdmin == null)
+    {
+        var adminUser = new UserEntity
+        {
+            Email = adminEmail,
+            UserName = adminEmail,
+            Name = "Admin",
+            Surname = "User"
+        };
+
+        var result = await userManager.CreateAsync(adminUser, adminPassword);
+        if (result.Succeeded)
+        {
+            await userManager.AddToRoleAsync(adminUser, "Admin");
+            Console.WriteLine("Admin user created.");
+        }
+        else
+        {
+            Console.WriteLine("Failed to create admin user:");
+            foreach (var error in result.Errors)
+                Console.WriteLine($"- {error.Description}");
+        }
+    }
+    else
+    {
+        Console.WriteLine("Admin user already exists.");
+    }
+}
+
+await SeedAdminAsync(app.Services, builder.Configuration);
+
+
 app.UseHttpsRedirection();
 
 //app.UseCors("AllowAll");
