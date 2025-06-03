@@ -10,6 +10,6 @@ public interface IAuthService
     //Task<bool> UserSignUpAsync(UserSignUpDto signUpDto);
     Task<(bool Success, string? ErrorMessage)> UserSignUpAsync(UserSignUpDto dto);
     Task<bool> LogoutAsync();
-    //Task<bool> UpdateUserProfileAsync(string userId, UserProfileUpdateDto dto);
+    Task<bool> UpdateUserProfileAsync(string userId, UserProfileUpdateDto dto);
 }
 

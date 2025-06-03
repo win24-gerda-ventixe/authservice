@@ -140,9 +140,8 @@ public class AuthService(
         );
 
         if (result.Succeeded)
-            return (true, null); // Successful login
+            return (true, null); 
 
-        // Try to register new user
         var email = info.Principal.FindFirstValue(ClaimTypes.Email);
         var firstName = info.Principal.FindFirstValue(ClaimTypes.GivenName) ?? "";
         var lastName = info.Principal.FindFirstValue(ClaimTypes.Surname) ?? "";
@@ -166,76 +165,28 @@ public class AuthService(
         await _userManager.AddLoginAsync(user, info);
         await _signInManager.SignInAsync(user, isPersistent: false);
 
-        return (true, null); // New user created and signed in
+        return (true, null); 
     }
 
-    //public async Task<bool> UpdateUserProfileAsync(string userId, UserProfileUpdateDto dto)
-    //{
-    //    var user = await _userManager.FindByIdAsync(userId);
-    //    if (user == null || user.Profile == null)
-    //        return false;
+    public async Task<bool> UpdateUserProfileAsync(string userId, UserProfileUpdateDto dto)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+            return false;
 
-    //    user.Profile.Name = dto.Name;
-    //    user.Profile.Surname = dto.Surname;
-    //    user.Profile.PhoneNumber = dto.PhoneNumber;
-    //    user.Profile.DateOfBirth = dto.DateOfBirth;
-    //    user.Profile.Country = dto.Country;
-    //    user.Profile.City = dto.City;
-
-    //    var result = await _userManager.UpdateAsync(user);
-    //    return result.Succeeded;
-    //}
+        user.Profile ??= new UserProfileEntity();
 
 
-    //private static string GenerateJwtToken(UserEntity user)
-    //{
-    //    var tokenHandler = new JwtSecurityTokenHandler();
-    //    var key = Encoding.ASCII.GetBytes("2K9Z!*r#7pLq8V^@mTzA$Nxw3hJu#ZbD");
+        user.Profile.Name = dto.Name;
+        user.Profile.Surname = dto.Surname;
+        user.Profile.PhoneNumber = dto.PhoneNumber;
+        user.Profile.DateOfBirth = dto.DateOfBirth;
+        user.Profile.Country = dto.Country;
+        user.Profile.City = dto.City;
 
-    //    var tokenDescriptor = new SecurityTokenDescriptor
-    //    {
-    //        Subject = new ClaimsIdentity(new[]
-    //        {
-    //            new Claim("id", user.Id.ToString()), 
-    //            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-    //            new Claim(ClaimTypes.Name, user.Name ?? string.Empty),
-    //            new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
-    //            new Claim(ClaimTypes.Role, "User")
-    //        }),
-
-
-    //        Expires = DateTime.UtcNow.AddHours(2),
-    //        SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-    //    };
-
-    //    var token = tokenHandler.CreateToken(tokenDescriptor);
-    //    return tokenHandler.WriteToken(token);
-    //}
-
-    //private string GenerateJwtToken(UserEntity user)
-    //{
-    //    var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]);
-    //    var tokenHandler = new JwtSecurityTokenHandler();
-
-    //    var tokenDescriptor = new SecurityTokenDescriptor
-    //    {
-    //        Subject = new ClaimsIdentity(new[]
-    //        {
-    //        new Claim("id", user.Id.ToString()),
-    //        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-    //        new Claim(ClaimTypes.Name, user.Name ?? string.Empty),
-    //        new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
-    //        new Claim(ClaimTypes.Role, "User")
-    //    }),
-    //        Expires = DateTime.UtcNow.AddHours(2),
-    //        SigningCredentials = new SigningCredentials(
-    //            new SymmetricSecurityKey(key),
-    //            SecurityAlgorithms.HmacSha256Signature)
-    //    };
-
-    //    var token = tokenHandler.CreateToken(tokenDescriptor);
-    //    return tokenHandler.WriteToken(token);
-    //}
+        var result = await _userManager.UpdateAsync(user);
+        return result.Succeeded;
+    }
 
     private async Task<string> GenerateJwtTokenAsync(UserEntity user)
     {
@@ -256,7 +207,7 @@ public class AuthService(
 
         foreach (var role in roles)
         {
-            claims.Add(new Claim("role", role)); // matches your RoleClaimType = "role"
+            claims.Add(new Claim("role", role)); 
         }
 
         var tokenDescriptor = new SecurityTokenDescriptor
