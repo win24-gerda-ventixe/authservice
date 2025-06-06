@@ -8,6 +8,19 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
+// i am storying admin log in details in my appsettings.json file, 
+// wasn't sure if i should leave it as a comment here for you to test
+// functionality as most of the functions such event creating, editing and deleting 
+// and also viewing existing bookings are only accessable to admin 
+// i will leave it here for you to test the functionality: Email: "admin@example.com", Password: "Admin123!"
+
+// i also have user profile entity here because i realised a bit too late i should 
+// move profile service to a separate microservice, but i will leave it here for now
+// as i intend to refactor it later on, as my summer project, testing locally to save azure credits
+
+// as for email verification, i have not implemented it yet, just because i don't think i have left
+// myself enough time to deal with potential issues but i have uploaded the code to my GitHub
+// and tested it using postman.
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers()
