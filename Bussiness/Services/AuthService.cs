@@ -17,22 +17,6 @@ public class AuthService(
     private readonly SignInManager<UserEntity> _signInManager = signInManager;
     private readonly IConfiguration _configuration = configuration;
 
-
-    //public async Task<bool> LoginAsync(UserSignInDto loginDto)
-    //{
-    //    var user = await _userManager.FindByEmailAsync(loginDto.Email);
-    //    if (user == null) return false;
-
-    //    var result = await _signInManager.PasswordSignInAsync(
-    //        user,
-    //        loginDto.Password,
-    //        loginDto.RememberMe,
-    //        lockoutOnFailure: false
-    //    );
-
-    //    return result.Succeeded;
-    //}
-
     public async Task<(bool Success, string? Token)> LoginAsync(UserSignInDto loginDto)
     {
         var user = await _userManager.FindByEmailAsync(loginDto.Email);
@@ -97,96 +81,72 @@ public class AuthService(
         return (true, null);
     }
 
-
-    //public async Task<bool> UserSignUpAsync(UserSignUpDto dto)
-    //{
-    //    var existingUser = await _userManager.FindByEmailAsync(dto.Email);
-    //    if (existingUser != null || !dto.AcceptTerms)
-    //        return false;
-
-    //    var user = new UserEntity
-    //    {
-    //        Email = dto.Email,
-    //        UserName = dto.Email,
-    //        Name = dto.Name,
-    //        Surname = dto.Surname
-    //    };
-
-    //    var result = await _userManager.CreateAsync(user, dto.Password);
-    //    if (!result.Succeeded)
-    //        return false;
-
-    //    await _userManager.AddToRoleAsync(user, "User");
-    //    return true;
-    //}
-
-
     public async Task<bool> LogoutAsync()
     {
         await _signInManager.SignOutAsync();
         return true;
     }
 
-    public async Task<(bool Success, string? ErrorMessage)> ExternalLoginCallbackAsync(ExternalLoginInfo info)
-    {
-        if (info == null)
-            return (false, "External login info not found.");
+    //public async Task<(bool Success, string? ErrorMessage)> ExternalLoginCallbackAsync(ExternalLoginInfo info)
+    //{
+    //    if (info == null)
+    //        return (false, "External login info not found.");
 
-        var result = await _signInManager.ExternalLoginSignInAsync(
-            info.LoginProvider,
-            info.ProviderKey,
-            isPersistent: false,
-            bypassTwoFactor: true
-        );
+    //    var result = await _signInManager.ExternalLoginSignInAsync(
+    //        info.LoginProvider,
+    //        info.ProviderKey,
+    //        isPersistent: false,
+    //        bypassTwoFactor: true
+    //    );
 
-        if (result.Succeeded)
-            return (true, null); 
+    //    if (result.Succeeded)
+    //        return (true, null); 
 
-        var email = info.Principal.FindFirstValue(ClaimTypes.Email);
-        var firstName = info.Principal.FindFirstValue(ClaimTypes.GivenName) ?? "";
-        var lastName = info.Principal.FindFirstValue(ClaimTypes.Surname) ?? "";
+    //    var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+    //    var firstName = info.Principal.FindFirstValue(ClaimTypes.GivenName) ?? "";
+    //    var lastName = info.Principal.FindFirstValue(ClaimTypes.Surname) ?? "";
 
-        var user = new UserEntity
-        {
-            Email = email,
-            UserName = $"ext_{info.LoginProvider.ToLower()}_{email}",
-            Name = firstName,
-            Surname = lastName
-        };
+    //    var user = new UserEntity
+    //    {
+    //        Email = email,
+    //        UserName = $"ext_{info.LoginProvider.ToLower()}_{email}",
+    //        Name = firstName,
+    //        Surname = lastName
+    //    };
 
-        var identityResult = await _userManager.CreateAsync(user);
-        if (!identityResult.Succeeded)
-        {
-            var errorMessage = string.Join(", ", identityResult.Errors.Select(e => e.Description));
-            return (false, errorMessage);
-        }
+    //    var identityResult = await _userManager.CreateAsync(user);
+    //    if (!identityResult.Succeeded)
+    //    {
+    //        var errorMessage = string.Join(", ", identityResult.Errors.Select(e => e.Description));
+    //        return (false, errorMessage);
+    //    }
 
-        await _userManager.AddToRoleAsync(user, "User");
-        await _userManager.AddLoginAsync(user, info);
-        await _signInManager.SignInAsync(user, isPersistent: false);
+    //    await _userManager.AddToRoleAsync(user, "User");
+    //    await _userManager.AddLoginAsync(user, info);
+    //    await _signInManager.SignInAsync(user, isPersistent: false);
 
-        return (true, null); 
-    }
+    //    return (true, null); 
+    //}
 
-    public async Task<bool> UpdateUserProfileAsync(string userId, UserProfileUpdateDto dto)
-    {
-        var user = await _userManager.FindByIdAsync(userId);
-        if (user == null)
-            return false;
+    //public async Task<bool> UpdateUserProfileAsync(string userId, UserProfileUpdateDto dto)
+    //{
+    //    var user = await _userManager.FindByIdAsync(userId);
+    //    if (user == null)
+    //        return false;
 
-        user.Profile ??= new UserProfileEntity();
+    //    user.Profile ??= new UserProfileEntity();
 
 
-        user.Profile.Name = dto.Name;
-        user.Profile.Surname = dto.Surname;
-        user.Profile.PhoneNumber = dto.PhoneNumber;
-        user.Profile.DateOfBirth = dto.DateOfBirth;
-        user.Profile.Country = dto.Country;
-        user.Profile.City = dto.City;
+    //    user.Profile.Name = dto.Name;
+    //    user.Profile.Surname = dto.Surname;
+    //    user.Profile.PhoneNumber = dto.PhoneNumber;
+    //    user.Profile.DateOfBirth = dto.DateOfBirth;
+    //    user.Profile.Country = dto.Country;
+    //    user.Profile.City = dto.City;
 
-        var result = await _userManager.UpdateAsync(user);
-        return result.Succeeded;
-    }
+    //    var result = await _userManager.UpdateAsync(user);
+    //    return result.Succeeded;
+    //}
 
     private async Task<string> GenerateJwtTokenAsync(UserEntity user)
     {
@@ -202,7 +162,9 @@ public class AuthService(
         new Claim("id", user.Id.ToString()),
         new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
         new Claim(ClaimTypes.Name, user.Name ?? string.Empty),
-        new Claim(ClaimTypes.Email, user.Email ?? string.Empty)
+        new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
+        
+       
     };
 
         foreach (var role in roles)

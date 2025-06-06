@@ -199,40 +199,40 @@ public class AuthController(IAuthService authService, UserManager<UserEntity> us
         return Ok(result);
     }
 
-    [HttpGet("profile")]
-    [Authorize]
-    public async Task<IActionResult> GetProfile()
-    {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userId == null)
-            return Unauthorized();
+    //[HttpGet("profile")]
+    //[Authorize]
+    //public async Task<IActionResult> GetProfile()
+    //{
+    //    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    //    if (userId == null)
+    //        return Unauthorized();
 
-        var user = await _userManager.FindByIdAsync(userId);
-        if (user == null || user.Profile == null)
-            return NotFound("User profile not found.");
+    //    var user = await _userManager.FindByIdAsync(userId);
+    //    if (user == null || user.Profile == null)
+    //        return NotFound("User profile not found.");
 
-        return Ok(new
-        {
-            user.Profile.Name,
-            user.Profile.Surname,
-            user.Profile.PhoneNumber,
-            user.Profile.DateOfBirth,
-            user.Profile.Country,
-            user.Profile.City
-        });
-    }
+    //    return Ok(new
+    //    {
+    //        user.Profile.Name,
+    //        user.Profile.Surname,
+    //        user.Profile.PhoneNumber,
+    //        user.Profile.DateOfBirth,
+    //        user.Profile.Country,
+    //        user.Profile.City
+    //    });
+    //}
 
-    [HttpPut("profile")]
-    [Authorize]
-    public async Task<IActionResult> UpdateProfile([FromBody] UserProfileUpdateDto dto)
-    {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userId == null)
-            return Unauthorized();
+    //[HttpPut("profile")]
+    //[Authorize]
+    //public async Task<IActionResult> UpdateProfile([FromBody] UserProfileUpdateDto dto)
+    //{
+    //    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    //    if (userId == null)
+    //        return Unauthorized();
 
-        var success = await _authService.UpdateUserProfileAsync(userId, dto);
-        return success ? Ok("Profile updated.") : BadRequest("Failed to update profile.");
-    }
+    //    var success = await _authService.UpdateUserProfileAsync(userId, dto);
+    //    return success ? Ok("Profile updated.") : BadRequest("Failed to update profile.");
+    //}
 
     //[HttpPost("external-login-callback")]
     //public async Task<IActionResult> ExternalLoginCallback()
